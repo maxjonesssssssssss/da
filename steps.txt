@@ -1,0 +1,50 @@
+
+1. Install java
+sudo apt install default-jdk -y
+java -version
+
+2. Download and setup hadoop
+wget https://downloads.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+
+3. extract
+tar -xzf hadoop-3.3.6.tar.gz
+
+4. SET java path
+nano hadoop-3.3.6/etc/hadoop/hadoop-env.sh
+At the bottom of the file add this line:
+export JAVA_HOME=/usr/lib/jvm/default-java
+OR 
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+Then press Ctrl + X → Y → Enter to save.
+
+====================================================
+
+1. Create a Floder
+mkdir ~/logprocess
+cd ~/logprocess
+
+2. create 3 java files
+nano LogMapper.java
+nano LogReducer.java
+nano LogAnalyzer.java
+
+3. Create input file
+mkdir loginput
+nano loginput/log.txt
+
+4. Compile
+javac -classpath ~/hadoop-3.3.6/share/hadoop/common/hadoop-common-3.3.6.jar:~/hadoop-3.3.6/share/hadoop/mapreduce/hadoop-mapreduce-client-core-3.3.6.jar -d . LogMapper.java LogReducer.java LogAnalyzer.java
+OR
+javac -classpath ~/hadoop-3.3.6/share/hadoop/common/hadoop-common-3.3.6.jar:~/hadoop-3.3.6/share/hadoop/mapreduce/hadoop-mapreduce-client-core-3.3.6.jar:~/hadoop-3.3.6/share/hadoop/mapreduce/hadoop-mapreduce-client-common-3.3.6.jar:~/hadoop-3.3.6/share/hadoop/common/lib/guava-27.0-jre.jar -d . LogMapper.java LogReducer.java LogAnalyzer.java
+OR
+javac -classpath $(find ~/hadoop-3.3.6/share/hadoop -name "*.jar" | tr '\n' ':') -d . LogMapper.java LogReducer.java LogAnalyzer.java
+
+5. Create jar file
+jar -cvf loganalyzer.jar LogMapper.class LogReducer.class LogAnalyzer.class
+
+6. Run
+~/hadoop-3.3.6/bin/hadoop jar loganalyzer.jar LogAnalyzer loginput logoutput
+
+7. FINALLLLEEEEE
+cat logoutput/part-r-00000
+
